@@ -1,0 +1,60 @@
+name: Deploy Airlines App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Backend Image
+        run: docker build -t airlines-backend ./backend
+
+      - name: Build Frontend Image
+        run: docker build -t airlines-frontend ./frontend
+
+      - name: Test Infrastructure (Terraform Format)
+        working-directory: ./terraform
+        run: terraform fmt -check
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: $${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: $${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # In a real scenario, you'd deploy using Terraform and then configure the EC2 instance or push to ECR/ECS
+      # Here we showcase the step placeholders for a complete CI/CD setup
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+        # Note: In practice, wait for EC2 to be ready, copy docker-compose, and run it.
+        # This pipeline provides the structure for the complete workflow.
