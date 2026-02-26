@@ -3,249 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudAirlines Flight Search</title>
+    <title>CloudAirlines - Premium Flight Booking</title>
     <style>
         :root {
             --primary-color: #2563eb;
             --secondary-color: #1e40af;
+            --accent-color: #10b981;
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --text-main: #1f2937;
             --text-muted: #6b7280;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
 
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            width: 100%;
-            padding: 1.5rem 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+        header { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 2rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 
-        header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-        }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
 
-        main {
-            width: 100%;
-            max-width: 900px;
-            padding: 2rem 1rem;
-            flex-grow: 1;
-        }
+        .section-title { margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem; }
 
-        .search-container {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+        #flight-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+        .flight-card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #e5e7eb; position: relative; overflow: hidden; }
+        .flight-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .flight-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary-color); }
 
-        button:hover {
-            background-color: var(--secondary-color);
-        }
+        .flight-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .airline { font-weight: 700; color: var(--primary-color); }
+        .flight-id { font-size: 0.8rem; color: var(--text-muted); background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; }
 
-        #flight-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
+        .route { display: flex; align-items: center; justify-content: space-between; margin: 1.5rem 0; font-weight: 600; }
+        .route-city { text-align: center; flex: 1; }
+        .plane-icon { color: var(--text-muted); padding: 0 1rem; }
 
-        .flight-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border-top: 4px solid var(--primary-color);
-            transition: transform 0.2s;
-        }
+        .flight-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee; }
+        .price { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); }
 
-        .flight-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+        button { background: var(--primary-color); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: var(--secondary-color); }
+        .btn-book { width: 100%; margin-top: 1rem; }
 
-        .flight-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-        }
-
-        .airline {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .flight-id {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        .route {
-            margin-bottom: 1rem;
-        }
-
-        .route p {
-            margin: 0.25rem 0;
-            display: flex;
-            align-items: center;
-            font-size: 0.95rem;
-        }
-
-        .route span {
-            font-weight: 600;
-            margin-right: 0.5rem;
-            color: var(--text-main);
-        }
-
-        .flight-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
-        }
-
-        .price {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #10b981;
-        }
-
-        .time {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 5% auto; padding: 2rem; border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         
-        .loading {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            grid-column: 1 / -1;
-            padding: 2rem;
-        }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; }
+        
+        .booking-summary { background: #f9fafb; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; border: 1px dashed #d1d5db; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .total-row { border-top: 1px solid #e5e7eb; margin-top: 0.5rem; padding-top: 0.5rem; font-weight: 800; font-size: 1.2rem; color: var(--accent-color); }
 
-        .error {
-            text-align: center;
-            color: #ef4444;
-            font-size: 1.2rem;
-            grid-column: 1 / -1;
-            padding: 2rem;
-        }
+        .success-overlay { text-align: center; padding: 2rem; }
+        .success-icon { font-size: 4rem; color: var(--accent-color); margin-bottom: 1rem; }
+
+        .loading { text-align: center; padding: 3rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>CloudAirlines Flight Search</h1>
+        <h1>CloudAirlines</h1>
+        <p>Your Journey, Our Priority</p>
     </header>
 
     <main>
-        <div class="search-container">
-            <h2>Find Your Next Adventure</h2>
-            <p style="margin: 1rem 0; color: var(--text-muted);">Search across our global network of flights powered by AWS.</p>
-            <button onclick="fetchFlights()">Search Available Flights</button>
+        <div class="section-title">
+            <h2>Available Flights</h2>
+            <p style="color: var(--text-muted)">Discover your next destination</p>
         </div>
 
         <div id="flight-results">
-            <!-- Flights will be injected here -->
+            <div class="loading">Loading flights...</div>
         </div>
     </main>
 
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div id="bookingFormContainer">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 id="modalTitle">Complete Your Booking</h2>
+                    <span style="cursor: pointer; font-size: 1.5rem;" onclick="closeModal()">&times;</span>
+                </div>
+                
+                <form id="bookingForm">
+                    <input type="hidden" id="selectedFlightId">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="passengerName" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Passport Number</label>
+                            <input type="text" id="passengerPassport" required placeholder="A1234567">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="passengerEmail" required placeholder="john@example.com">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Select Seat</label>
+                            <select id="seatSelection" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Meal Preference</label>
+                            <select id="mealSelection" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Discount Code</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="discountCode" placeholder="TRY FLY20">
+                            <button type="button" onclick="applyDiscount()" style="background: #4b5563;">Apply</button>
+                        </div>
+                    </div>
+
+                    <div class="booking-summary">
+                        <div class="summary-row">
+                            <span>Base Fare</span>
+                            <span id="summaryBasePrice">$0.00</span>
+                        </div>
+                        <div class="summary-row" id="discountRow" style="display: none; color: var(--accent-color);">
+                            <span>Discount</span>
+                            <span id="summaryDiscount">-$0.00</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total Amount</span>
+                            <span id="summaryTotal">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-book" style="padding: 1rem; font-size: 1.1rem; margin-top: 1.5rem;">Confirm & Pay</button>
+                </form>
+            </div>
+
+            <div id="successMessage" class="success-overlay" style="display: none;">
+                <div class="success-icon">✓</div>
+                <h2>Booking Confirmed!</h2>
+                <p style="margin: 1rem 0; color: var(--text-muted)">Your flight has been reserved. Booking ID: <strong id="resBookingId"></strong></p>
+                <div id="resSummary" class="booking-summary" style="text-align: left;"></div>
+                <button onclick="closeModal()" style="margin-top: 2rem;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:8000/api/flights' 
-            : '/api/flights';
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:8001/api' 
+            : '/api';
+
+        let flights = [];
+        let currentFlight = null;
+        let basePrice = 0;
+
+        async function init() {
+            await fetchFlights();
+        }
 
         async function fetchFlights() {
-            const resultsContainer = document.getElementById('flight-results');
-            resultsContainer.innerHTML = '<div class="loading">Searching for flights...</div>';
-
+            const container = document.getElementById('flight-results');
             try {
-                // If the app is behind a reverse proxy like NGINX or ALB, we might just call /api/flights
-                // For local docker-compose, we map 8000 to localhost, so let's try a relative path first, 
-                // falling back to localhost:8000 if running locally without proxy.
+                const res = await fetch(`${API_BASE}/flights`);
+                flights = await res.json();
                 
-                // Determine API endpoint based on environment
-                let endpoint = '/api/flights';
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    // check if port is 80 (nginx frontend), if so nginx will proxy to backend.
-                    if(window.location.port !== '80' && window.location.port !== '') {
-                        endpoint = 'http://localhost:8000/api/flights';
-                    }
-                }
-
-                const response = await fetch(endpoint);
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const flights = await response.json();
-                
-                if (flights.length === 0) {
-                    resultsContainer.innerHTML = '<div class="loading">No flights found.</div>';
-                    return;
-                }
-
-                resultsContainer.innerHTML = '';
-                
-                flights.forEach(flight => {
+                container.innerHTML = '';
+                flights.forEach(f => {
                     const card = document.createElement('div');
                     card.className = 'flight-card';
                     card.innerHTML = `
                         <div class="flight-header">
-                            <span class="airline">${flight.airline}</span>
-                            <span class="flight-id">${flight.id}</span>
+                            <span class="airline">${f.airline}</span>
+                            <span class="flight-id">${f.id}</span>
                         </div>
                         <div class="route">
-                            <p><span>From:</span> ${flight.origin}</p>
-                            <p><span>To:</span> ${flight.destination}</p>
+                            <div class="route-city">${f.origin}</div>
+                            <div class="plane-icon">✈</div>
+                            <div class="route-city">${f.destination}</div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); text-align: center; margin-bottom: 1rem;">
+                            🕒 ${f.time}
                         </div>
                         <div class="flight-footer">
-                            <span class="time">Departure: ${flight.time}</span>
-                            <span class="price">$${flight.price.toFixed(2)}</span>
+                            <span class="price">$${f.price.toFixed(2)}</span>
+                            <button onclick="openBooking('${f.id}')">Select Flight</button>
                         </div>
                     `;
-                    resultsContainer.appendChild(card);
+                    container.appendChild(card);
                 });
-            } catch (error) {
-                console.error('Error fetching flights:', error);
-                resultsContainer.innerHTML = '<div class="error">Failed to load flights. Ensure the backend API is running.</div>';
+            } catch (e) {
+                container.innerHTML = '<div class="loading" style="color: #ef4444">Failed to load flights. Is the backend running?</div>';
             }
         }
+
+        async function openBooking(flightId) {
+            currentFlight = flights.find(f => f.id === flightId);
+            basePrice = currentFlight.price;
+            
+            document.getElementById('selectedFlightId').value = flightId;
+            document.getElementById('summaryBasePrice').textContent = `$${basePrice.toFixed(2)}`;
+            updateTotal();
+
+            // Fetch Seats and Meals
+            try {
+                const [seatsRes, mealsRes] = await Promise.all([
+                    fetch(`${API_BASE}/flights/${flightId}/seats`),
+                    fetch(`${API_BASE}/meals`)
+                ]);
+                
+                const { seats } = await seatsRes.json();
+                const { meals } = await mealsRes.json();
+
+                const seatSelect = document.getElementById('seatSelection');
+                seatSelect.innerHTML = seats.map(s => `<option value="${s}">${s}</option>`).join('');
+
+                const mealSelect = document.getElementById('mealSelection');
+                mealSelect.innerHTML = meals.map(m => `<option value="${m}">${m}</option>`).join('');
+
+                document.getElementById('bookingModal').style.display = 'block';
+                document.getElementById('bookingFormContainer').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            } catch (e) {
+                alert("Error loading booking details");
+            }
+        }
+
+        function applyDiscount() {
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const code = document.getElementById('discountCode').value.toUpperCase();
+            let discount = 0;
+            
+            // Simple frontend preview of discounts
+            if (code === 'FLY20') discount = basePrice * 0.20;
+            else if (code === 'SAVE10') discount = basePrice * 0.10;
+            else if (code === 'WELCOME50') discount = basePrice * 0.50;
+
+            if (discount > 0) {
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('summaryDiscount').textContent = `-$${discount.toFixed(2)}`;
+            } else {
+                document.getElementById('discountRow').style.display = 'none';
+            }
+
+            document.getElementById('summaryTotal').textContent = `$${(basePrice - discount).toFixed(2)}`;
+        }
+
+        document.getElementById('bookingForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                flight_id: currentFlight.id,
+                passenger: {
+                    name: document.getElementById('passengerName').value,
+                    email: document.getElementById('passengerEmail').value,
+                    passport: document.getElementById('passengerPassport').value
+                },
+                seat: document.getElementById('seatSelection').value,
+                meal: document.getElementById('mealSelection').value,
+                discount_code: document.getElementById('discountCode').value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/bookings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const booking = await res.json();
+                    showSuccess(booking);
+                } else {
+                    alert("Booking failed. Please check details.");
+                }
+            } catch (e) {
+                alert("Network error occurred.");
+            }
+        };
+
+        function showSuccess(b) {
+            document.getElementById('bookingFormContainer').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('resBookingId').textContent = b.booking_id;
+            
+            document.getElementById('resSummary').innerHTML = `
+                <p><strong>Passenger:</strong> ${b.passenger.name}</p>
+                <p><strong>Flight:</strong> ${b.flight.origin} to ${b.flight.destination}</p>
+                <p><strong>Seat:</strong> ${b.seat} | <strong>Meal:</strong> ${b.meal}</p>
+                <p><strong>Price Paid:</strong> $${b.final_price.toFixed(2)}</p>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('bookingModal')) closeModal();
+        }
+
+        init();
     </script>
 </body>
 </html>
