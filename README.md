@@ -47,3 +47,4 @@ A simple 3-tier-style airlines application built to demonstrate core DevOps prac
 The project includes a `.github/workflows/deploy.yml` which automatically builds the Docker images and applies the Terraform configuration upon a push to the `main` branch. 
 
 **Note:** You must configure `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in your GitHub repository secrets for the pipeline to interact with your AWS account.
+# Updated at Thu Feb 26 05:05:59 PM IST 2026
